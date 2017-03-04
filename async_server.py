@@ -13,12 +13,16 @@ import uvloop
 import json
 
 
-AUTH_URL = 'http://10.220.101.33:5000/v3'
+AUTH_URL = 'http://10.2.57.20:5000/v3'
 USERNAME = "admin"
 PASSWORD = "admin"
 PROJECT_NAME = "admin"
 USER_DOMAIN_ID = "default"
 PROJECT_DOMAIN_ID = "default"
+
+NOVA_ENDPOINT = 'http://10.2.55.31:8774/v2.1'
+GLANCE_ENDPOINT = 'http://10.2.55.31:9292/v2'
+NEUTRON_ENDPOINT = 'http://10.2.57.31:9696/v2.0'
 
 async def get_data(request):
     auth_token = get_auth_token()
@@ -36,7 +40,7 @@ async def get_data(request):
 
 async def list_flavors(auth_token):
 
-    url = 'http://10.220.101.33:8774/v2.1/flavors/detail'
+    url = '%s/flavors/detail' % NOVA_ENDPOINT
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
@@ -45,7 +49,7 @@ async def list_flavors(auth_token):
 
 async def list_servers(auth_token):
 
-    url = 'http://10.220.101.33:8774/v2.1/servers/detail'
+    url = '%s/servers/detail' % NOVA_ENDPOINT
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
@@ -54,7 +58,7 @@ async def list_servers(auth_token):
 
 async def list_images(auth_token):
 
-    url = 'http://10.220.101.33:9292/v2/images'
+    url = '%s/images' % GLANCE_ENDPOINT
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
@@ -63,7 +67,7 @@ async def list_images(auth_token):
 
 async def list_networks(auth_token):
 
-    url = 'http://10.220.101.33:9696/v2.0/networks.json'
+    url = '%s/networks.json' % NEUTRON_ENDPOINT
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
@@ -71,7 +75,7 @@ async def list_networks(auth_token):
 
 async def list_ports(auth_token):
 
-    url = 'http://10.220.101.33:9696/v2.0/ports.json'
+    url = '%s/ports.json' % NEUTRON_ENDPOINT
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
@@ -79,7 +83,7 @@ async def list_ports(auth_token):
 
 async def list_fips(auth_token):
 
-    url = 'http://10.220.101.33:9696/v2.0/floatingips.json'
+    url = '%s/floatingips.json' % NEUTRON_ENDPOINT
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
