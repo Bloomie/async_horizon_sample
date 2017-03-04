@@ -12,6 +12,11 @@ from neutronclient.v2_0 import client as neutron_client
 import uvloop
 import json
 
+from sanic import Sanic
+from sanic.response import HTTPResponse
+
+app = Sanic()
+
 
 AUTH_URL = 'http://10.220.101.33:5000/v3'
 USERNAME = "admin"
@@ -20,9 +25,11 @@ PROJECT_NAME = "admin"
 USER_DOMAIN_ID = "default"
 PROJECT_DOMAIN_ID = "default"
 
-async def get_data(request):
+
+@app.route("/")
+async def hello(request):
     auth_token = get_auth_token()
-    res_list = await asyncio.gather(
+    await asyncio.gather(
         list_flavors(auth_token),
         list_servers(auth_token),
         list_images(auth_token),
@@ -30,8 +37,8 @@ async def get_data(request):
         list_ports(auth_token),
         list_fips(auth_token),
     )
-    response = web.Response(body="\n".join(
-        [str(x) for x in res_list]).encode())
+    #response = web.Response(body="Servers: {}\nImages: {}\nFlavors: {}\n".format(servers, images, flavors).encode())
+    response = HTTPResponse(body="Getrekt".encode())
     return response
 
 async def list_flavors(auth_token):
@@ -92,7 +99,5 @@ def get_auth_token():
     sess = session.Session(auth=auth)
     return sess.get_token()
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-app = web.Application()
-app.router.add_route("GET", "/", get_data)
-web.run_app(app, port=8080)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)

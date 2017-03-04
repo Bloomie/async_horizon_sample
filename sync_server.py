@@ -9,12 +9,15 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import socketserver
 
 
-AUTH_URL = "http://10.2.55.20:5000/v3"
+AUTH_URL = "http://10.2.57.20:5000/v3"
 USERNAME = "admin"
 PASSWORD = "admin"
 PROJECT_NAME = "admin"
 USER_DOMAIN_ID = "default"
 PROJECT_DOMAIN_ID = "default"
+
+GLANCE_ENDPOINT = 'http://10.2.57.31:9292'
+NEUTRON_ENDPOINT = 'http://10.2.57.31:9696'
 
 def build_novaclient(auth_token):
     return nova_client.Client('2.1',
@@ -25,10 +28,10 @@ def build_novaclient(auth_token):
                            auth_token=auth_token)
 
 def build_glanceclient(auth_token):
-    return glance_client.Client('2', 'http://10.2.55.31:9292', token=auth_token)
+    return glance_client.Client('2', GLANCE_ENDPOINT, token=auth_token)
 
 def build_neutronclient(auth_token):
-    return neutron_client.Client(token=auth_token, endpoint_url = 'http://10.2.55.31:9696', auth_url = AUTH_URL)
+    return neutron_client.Client(token=auth_token, endpoint_url = NEUTRON_ENDPOINT, auth_url = AUTH_URL)
 
 
 def get_auth_token():
@@ -55,7 +58,7 @@ def get_data():
     networks = build_neutronclient(auth_token).list_networks()
     fips = build_neutronclient(auth_token).list_floatingips()
 
-    return servers, images, flavors
+    return "\n".join([str(x) for x in [servers, images, flavors, None, None, None]])
 
 class S(BaseHTTPRequestHandler):
     def _set_headers(self):
@@ -65,10 +68,10 @@ class S(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        servers, images, flavors = get_data()
-        self.wfile.write("Servers: {}\nImages: {}\nFlavors: {}\n".format(servers, images, flavors).encode())
+        response = get_data()
+        self.wfile.write(response.encode())
 
-def run(server_class=HTTPServer, handler_class=S, port=80):
+def run(server_class=HTTPServer, handler_class=S, port=8080):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
