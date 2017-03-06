@@ -13,16 +13,16 @@ import uvloop
 import json
 
 
-AUTH_URL = 'http://10.2.57.20:5000/v3'
+AUTH_URL = 'http://10.220.104.33:5000/v3'
 USERNAME = "admin"
 PASSWORD = "admin"
 PROJECT_NAME = "admin"
 USER_DOMAIN_ID = "default"
 PROJECT_DOMAIN_ID = "default"
 
-NOVA_ENDPOINT = 'http://10.2.55.31:8774/v2.1'
-GLANCE_ENDPOINT = 'http://10.2.55.31:9292/v2'
-NEUTRON_ENDPOINT = 'http://10.2.57.31:9696/v2.0'
+NOVA_ENDPOINT = 'http://10.220.104.33:8774/v2.1'
+GLANCE_ENDPOINT = 'http://10.220.104.33:9292/v2'
+NEUTRON_ENDPOINT = 'http://10.220.104.33:9696/v2.0'
 
 async def get_data(request):
     auth_token = get_auth_token()
@@ -71,7 +71,8 @@ async def list_networks(auth_token):
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
-            response = await response.read()
+            response = await response.json()
+            return [s['name'] for s in response['networks']]
 
 async def list_ports(auth_token):
 
@@ -80,6 +81,7 @@ async def list_ports(auth_token):
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             response = await response.json()
+            return [s['name'] for s in response['ports']]
 
 async def list_fips(auth_token):
 
@@ -87,7 +89,8 @@ async def list_fips(auth_token):
     headers = {'content-type': 'application/json', 'X-Auth-Token': auth_token}
     async with ClientSession() as session:
         async with session.get(url, headers=headers) as response:
-            response = await response.read()
+            response = await response.json()
+            return [s['floating_ip_address'] for s in response['floatingips']]
 
 def get_auth_token():
     auth = v3.Password(auth_url=AUTH_URL, username=USERNAME,

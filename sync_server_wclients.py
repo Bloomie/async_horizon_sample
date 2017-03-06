@@ -9,15 +9,15 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import socketserver
 
 
-AUTH_URL = "http://10.2.57.20:5000/v3"
+AUTH_URL = "http://10.220.104.33:5000/v3"
 USERNAME = "admin"
 PASSWORD = "admin"
 PROJECT_NAME = "admin"
 USER_DOMAIN_ID = "default"
 PROJECT_DOMAIN_ID = "default"
 
-GLANCE_ENDPOINT = 'http://10.2.57.31:9292'
-NEUTRON_ENDPOINT = 'http://10.2.57.31:9696'
+GLANCE_ENDPOINT = 'http://10.220.104.33:9292'
+NEUTRON_ENDPOINT = 'http://10.220.104.33:9696'
 
 def build_novaclient(auth_token):
     return nova_client.Client('2.1',
